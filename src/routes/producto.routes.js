@@ -5,6 +5,7 @@ const router = Router() //considerar los verbo
 
 router.get('/', controller.listarProductos)
 router.get('/:id', controller.obtenerProducto)
+router.get('/', controller.crearProducto)
 
 //pendiente... PUT, POST, DELETE
 
