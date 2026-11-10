@@ -5,7 +5,7 @@
 
 
 // todas las rutas se organizan gracias a index.js (indice)
-const { Router, Router } = require('express');
+const { Router } = require('express');
 
 // esto se realiza por cada routes
 const productoRoutes = require('./producto.routes');
