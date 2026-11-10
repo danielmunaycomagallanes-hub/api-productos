@@ -11,7 +11,7 @@ const { Router } = require('express');
 const productoRoutes = require('./producto.routes');
 
 // esto es solo uno para todas las rutas
-const router = router();
+const router = Router();
 
 // esto es por cada routes
 router.use('/productos', productoRoutes);
