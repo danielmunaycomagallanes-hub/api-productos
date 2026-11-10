@@ -3,8 +3,8 @@ const controller = require('../controllers/producto.controller')//controlador (L
 
 const router = Router() //considerar los verbo 
 
-router get('/', controller.listarProductos)
-router get('/', controller.obtenerProducto)
+router.get('/', controller.listarProductos)
+router.get('/', controller.obtenerProducto)
 
 //pendiente... PUT, POST, DELETE
 
