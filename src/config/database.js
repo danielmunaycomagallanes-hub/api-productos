@@ -19,7 +19,7 @@ const pool = mysql.createPool({
 const probarConexion = async() => {
   const conexion = await pool.getConnection()
   await conexion.ping()//test
-  conexión.release()//Desconexión
+  conexion.release()//Desconexión
 }
 
 
