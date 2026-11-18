@@ -1,17 +1,13 @@
 const { pool } = require('../config/database')
-
 const validarCampos = ({razonsocial, contacto, ruc, direccion} = {}) => {
     const errores = []
     if (!razonsocial || razonsocial.trim() === '') errores.push('La razon social es obligatoria')
-    if (!contacto || contacto.trim() === '') errores.push('La contacto es obligatorio')
+    if (!contacto || contacto.trim() === '') errores.push('El contacto es obligatorio') // <-- Corregido "La" por "El"
     if (!ruc || ruc.length !== 11) errores.push('El ruc debe tener 11 numeros')
     if (!direccion || direccion.trim() === '') errores.push('La direccion es obligatoria')
-
     return errores
 }
 
-//------------------------------------------------------------------------
-//LISTAR PROVEEDORES
 const listarProveedores = async(req, res) => {
     try{
         const [proveedores] = await pool.query('SELECT * FROM proveedores ORDER BY id')
@@ -26,12 +22,9 @@ const listarProveedores = async(req, res) => {
         ok: false,
         message: 'Error interno en el sistema' 
         })
-        
     }
 }
 
-//---------------------------------------------------------
-//OBTENER PROVEEDORES
 const obtenerProveedor = async(req, res) => {
     try{
         const id = Number(req.params.id)
@@ -42,8 +35,6 @@ const obtenerProveedor = async(req, res) => {
             })
         }
     
-
-
 const [registro] = await pool.execute('SELECT * FROM proveedores WHERE id = ?', [id])
 
 if (registro.length === 0){
@@ -52,7 +43,6 @@ if (registro.length === 0){
         message: 'No existe el proveedor'
     })
 }
-
 res.status(200).json({
     ok: true,
     data: registro[0]
@@ -65,8 +55,7 @@ res.status(200).json({
     })
 }
 }
-//------------------------------------------------------------
-//CREAR PROVEEDOR
+
 const crearProveedor = async(req, res) => {
     try{
         const errores = validarCampos(req.body)
@@ -79,7 +68,6 @@ const crearProveedor = async(req, res) => {
             })
         }
     
-
 const {razonsocial, contacto, ruc, direccion} = req.body
 const consulta = 'INSERT INTO proveedores (razonsocial, contacto, ruc, direccion) VALUES (?,?,?,?)'
 const [registro] = await pool.execute(consulta, [razonsocial, contacto, ruc, direccion])
@@ -97,8 +85,6 @@ res.status(201).json({
     }
 }
 
-//-----------------------------------------------------------------
-//PROVEEDOR ACTUALIZAR
 const actualizarProveedor = async(req, res) => {
     try{
         const id = Number(req.params.id)
@@ -143,8 +129,7 @@ const actualizarProveedor = async(req, res) => {
         })
     }
 }
-//-----------------------------------------------------------------
-//ELIMINAR PROVEEDOR
+
 const eliminarProveedor = async(req, res) => {
     try{
         const id=Number(req.params.id)
@@ -156,7 +141,6 @@ const eliminarProveedor = async(req, res) => {
     }
 
     const [resultado] = await pool.execute('DELETE FROM proveedores WHERE id = ?', [id])
-
     if (resultado.affectedRows === 0){
         return res.status(404).json({
             ok: false,

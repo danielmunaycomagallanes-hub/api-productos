@@ -1,5 +1,4 @@
 const { pool } = require('../config/database')
-
 const validarCampos = ({apellidos, nombres, telefono, direccion, email} = {}) => {
     const errores = []
 
@@ -7,14 +6,10 @@ const validarCampos = ({apellidos, nombres, telefono, direccion, email} = {}) =>
     if (!nombres || nombres.trim() === '') errores.push('Los nombres son obligatorios')
     if (!telefono || telefono.length !== 9) errores.push(' El numero de telefono debe tener 9 numeros')
     if (!direccion || direccion.trim() === '') errores.push('La direccion es obligatoria')
-    if (!email || !email.includes('@') === '') errores.push('Verifica el gmail')
-
-    //es posible tener mas de un error
+    if (!email || !email.includes('@')) errores.push('Verifica el gmail')
     return errores
 }
 
-//--------------------------------------------------------------
-//LISTAR CLIENTES
 const listarClientes = async(req, res) => {
     try{
         const [clientes] = await pool.query('SELECT * FROM clientes ORDER BY id')
@@ -33,8 +28,7 @@ const listarClientes = async(req, res) => {
 
     }
 }
-//----------------------------------------------------------------
-// OBTENER CLIENTES
+
 const obtenerClientes = async(req, res) => {
     try{
       const id = Number(req.params.id)
@@ -45,7 +39,7 @@ const obtenerClientes = async(req, res) => {
         })
       }
  
-      const [registro] = await pool.execute(`SELECT * FROM productos WHERE id = ?`, [id])
+      const [registro] = await pool.execute(`SELECT * FROM clientes WHERE id = ?`, [id])
       
       if (registro.length === 0){
         return res.status(404).json({
@@ -66,8 +60,7 @@ const obtenerClientes = async(req, res) => {
     })
   }
 }
-//---------------------------------------------------------------------
-//CREAR CLIENTE
+
 const crearCliente = async(req, res) => {
     try{
       const errores = validarCampos(req.body)
@@ -80,9 +73,8 @@ const crearCliente = async(req, res) => {
         })
       }
 
-      //guardar datos
       const {apellidos, nombres, telefono, direccion, email} = req.body
-      const consulta = 'INSERT INTO clientes (apellidos, nombres, telefono, direccion, email VALUES (?,?,?,?,?))'
+      const consulta = 'INSERT INTO clientes (apellidos, nombres, telefono, direccion, email) VALUES (?,?,?,?,?)'
       const [registro] = await pool.execute(consulta, [apellidos, nombres, telefono, direccion, email])
 
       res.status(201).json({
@@ -97,8 +89,7 @@ const crearCliente = async(req, res) => {
     })
   }
 }
-//------------------------------------------------------------
-//ACTUALIZAR CLIENTES
+
 const actualizarCliente = async(req, res) => {
     try{
         const id = Number(req.params.id)
@@ -110,7 +101,6 @@ const actualizarCliente = async(req, res) => {
             })
         }
 
-        //validamos
         const errores = validarCampos(req.body)
         if (errores.length > 0){
             return res.status(400).json({
@@ -120,7 +110,6 @@ const actualizarCliente = async(req, res) => {
             })
         }
 
-        //en caso de ni existir un id
         const [existe] = await pool.execute('SELECT id FROM clientes WHERE id = ?', [id])
         if (existe.length === 0){
             return res.status(404).json({
@@ -129,14 +118,13 @@ const actualizarCliente = async(req, res) => {
             })
         }
 
-        //Actualizamos
         const consulta = 'UPDATE clientes SET apellidos=?, nombres=?, telefono=?, direccion=?, email=?, update_at=NOW() WHERE id=?'
         const {apellidos, nombres, telefono, direccion, email} = req.body
         const[resultado] = await pool.execute(consulta, [apellidos, nombres, telefono, direccion, email, id])
 
         res.status(200).json({
             ok: true,
-            filasAfectadas: resultado,affectedRows
+            filasAfectadas: resultado.affectedRows
         })
       
     }catch(e){
@@ -147,8 +135,7 @@ const actualizarCliente = async(req, res) => {
     })
   }
 }
-//------------------------------------------------------------------------
-//ELIMINAR CLIENTES
+
 const eliminarCliente = async(req, res) => {
     try{
         const id = Number(req.params.id)

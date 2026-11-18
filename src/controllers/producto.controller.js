@@ -1,35 +1,36 @@
-//Este aqrchivo contiene la logica de la aplicación
+//Este archivo contiene la lógica de la aplicación
 //5 procedimientos: buscar, listar, registrar, actualizar, eliminar
 
-//PASO 1
-//const objeto = require()  //TODOS LOS MÉTODOS
-//const { otroObjeto } = require('')   //SOLO ALGUNAS FUNCIONES
-const { pool } = require('../config/database')
-const CAMPOS = 'id, marca, descripcion, precio, stock'  //Dato común
+//PASO 1 
+//const objeto = require('') //TODOS LAS FUNCIONES
+//const { otroObjeto } = require('') //SOLO ALGUNAS FUNCIONES
 
-//todas las funciones seran ASINCRONAS (tardaran un tiempo en ser resueltas...)
+const { pool } = require('../config/database')
+const CAMPOS = 'id, marca, descripcion, precio, stock' //Dato común
+
+//Todas las funciones serán ASÍNCRONAS (tardarán un tiempo en ser resueltas...)
 //milisegundos, segundos (1000 = 1seg)
 //Todas las funciones reciben y envían datos (pasarelas)
-//req (requiere - solicitar >>>), res (result - <<< resultado)
+//req (require - solicitar >>>), res (result - <<< resultado)
 
-
-//Crear - actualizar
+//crear - actualizar
 const validarCampos = ({marca, descripcion, precio, stock} = {}) => {
   const errores = []
-  if (marca.trim() === '') errores.push('La marca obligatoria')
-  if (descripcion.trim() === '') errores.push('La descripcion es necesaria')
+
+  if (marca.trim() === '') errores.push('La marca es obligatoria')
+  if (descripcion.trim() === '') errores.push('La descripción es necesaria')
   if (precio === undefined || isNaN(precio) || precio < 0) errores.push('Verifique el precio')
-  if (stock === undefined || !Number.isInteger(stock) || Number(stock)< 0) errores.push('Error en el stock')
-    
-    //Es posible tener mas de un error
+  if (stock === undefined || !Number.isInteger(stock) || Number(stock) < 0) errores.push('Error en el stock')
+  
+  //Es posible tener más de un error
   return errores
 }
 
-
-//API REST => http://miaplicacion.com/api/productos/1
+//API REST => http://miaplicacion.com/api/productos
 const listarProductos = async(req, res) => {
-  //se utiliza try - catch pporque existe una probabilidad de error
+  //Se utilizar try - catch porque existe una probabilidad de error
   try{
+    //Deserialización (obtener el primer el elemento del arreglo)
     const [productos] = await pool.query('SELECT * FROM productos ORDER BY id')
     res.status(200).json({
       ok: true,
@@ -46,37 +47,37 @@ const listarProductos = async(req, res) => {
 }
 
 //Buscar ¿cómo funciona?
-//API REST => http://miaplicacion.com/api/productos/1
+//API REST => http://miaplicacion.com/api/productos/10
 const obtenerProducto = async(req, res) => {
-    try{
-      //req.params representa los parámetros enviados por la URL
-      const id = Number(req.params.id)
-      if (id <= 0){
-        return res.status(400).json({
-          ok: false,
-          message: 'El ID no puede ser negativo o cero'
-        })
-      }
-
-      //Si podemos buscar(>0). Utilizaremos EXECUTE porque pasaremos parámetros
-      //Eviatremos SQLinjection (técnica hackeo)
-      //? = comodín, representa un valor 
-      const [registro] = await pool.execute(`SELECT * FROM productos WHERE id = ?`, [id])
-      
-      //Existe la posibilidad que NO encontremos el registro
-      if (registro.length === 0){
-        return res.status(404).json({
-          ok: false,
-          message: 'No existe el producto'
-        })
-      }
-
-      //Si llegamos hasta aqui, entonces SÍ existe el registro
-      res.status(200).json({
-        ok: true,
-        data: registro[0]
+  try{
+    //req.params representa los parámetros enviados por la URL
+    const id = Number(req.params.id)
+    if (id <= 0){
+      return res.status(400).json({
+        ok: false,
+        message: 'El ID no puede ser negativo o cero'
       })
-    }catch(e){
+    }
+
+    //Si podemos buscar (>0). Utilizaremos EXECUTE porque pasaremos parámetros
+    //Evitaremos SQLinjection (técnica hackeo)
+    //? = comodín, representa un valor
+    const [registro] = await pool.execute(`SELECT * FROM productos WHERE id = ?`, [id])
+
+    //Existe la posibilidad que NO encontremos el registro
+    if (registro.length === 0){
+      return res.status(404).json({
+        ok: false,
+        message: 'No existe el producto'
+      })
+    }
+
+    //Si llegamos hasta aquí, entonces SÍ existe el registro
+    res.status(200).json({
+      ok: true,
+      data: registro[0]
+    })
+  }catch(e){
     console.error(e)
     res.status(500).json({
       ok: false,
@@ -86,26 +87,26 @@ const obtenerProducto = async(req, res) => {
 }
 
 const crearProducto = async(req, res) => {
-    try{
-      const errores = validarCampos(req.body) //req.body contiene todos los datos a registrar
-      if (errores.length > 0){
-        return res.status(400).json({
-          ok: false,
+  try{
+    const errores = validarCampos(req.body) //req.body contiene todos los a registrar
+    if (errores.length > 0){
+      return res.status(400).json({
+        ok: false,
         message: 'Verifique los datos solicitados',
-      errores
-            })
-      }
-
-      //Procedemos a guardar los datos
-      const {marca, descripcion, precio, stock} = req.body
-      const consulta = `INSERT INTO productos (marca, descripcion, precio, stock) VALUES (?,?,?,?)`
-      const [registro] = await pool.execute(consulta, [marca, descripcion, precio, stock])
-
-      res.status(201).json({
-        ok: true,
-        id: registro.insertId
+        errores
       })
-    }catch(e){
+    }
+
+    //Procedemos a guardar los datos
+    const { marca, descripcion, precio, stock } = req.body
+    const consulta = `INSERT INTO productos (marca, descripcion, precio, stock) VALUES (?,?,?,?)`
+    const [registro] = await pool.execute(consulta, [marca, descripcion, precio, stock])
+
+    res.status(201).json({
+      ok: true,
+      id: registro.insertId
+    })
+  }catch(e){
     console.error(e)
     res.status(500).json({
       ok: false,
@@ -114,7 +115,7 @@ const crearProducto = async(req, res) => {
   }
 }
 
-const actualizarProducto = async(req, res) => {  
+const actualizarProducto = async(req, res) => {
   try{
     //Obtener el ID del producto a actualizar (obtenerProducto)
     const id = Number(req.params.id)
@@ -127,44 +128,61 @@ const actualizarProducto = async(req, res) => {
     }
 
     //Validar los campos (crearProducto)
-const errores = validarCampos(req.body)
-if (errores.length > 0){
-  return res.status(400).json({
-    ok: false,
-    message: 'Verifique los datos solicitados',
-    errores
-  })
-}
+    const errores = validarCampos(req.body)
+    if (errores.length > 0){
+      return res.status(400).json({
+        ok: false,
+        message: 'Verifique los datos solicitados',
+        errores
+      })
+    }
 
-//¿Y si el ID no existe?
-const [existe] = await pool.execute('SELECT id FROM productos WHERE id = ?', [id])
-if (existe === O){
-  return res.status(404).json({
-    ok: false,
-    message: 'El ID no existe'
-  })
-}
+    //¿Y si el ID no existe?
+    const [existe] = await pool.execute('SELECT id FROM productos WHERE id = ?', [id])
+    if (existe === 0){
+      return res.status(404).json({
+        ok: false,
+        message: 'El ID no existe'
+      })
+    }
 
-//Finalmente actualizaremos
-const consulta = 'UPDATE productos SET marca=?, descripcion=?, precio=?, stock=? WHERE id=?'
-const {marca, descripcion, precio, stock } = req.body
-const [resultado] = await pool.execute(consulta, [marca, descripcion, precio, stock, id])
-
-res.status(200).json({
-  ok: true,
-  filasAfectadas: resultado.affectedRows
-})
+    //Finalmente actualizaremos...
+    const consulta = 'UPDATE productos SET marca=?, descripcion=?, precio=?, stock=? WHERE id=?'
+    const { marca, descripcion, precio, stock } = req.body
+    const [resultado] = await pool.execute(consulta, [marca, descripcion, precio, stock, id])
+    
+    res.status(200).json({
+      ok: true,
+      filasAfectadas: resultado.affectedRows
+    })
 
   }catch(e){
-    console.error(e)
+    console.error(e) 
     res.status(500).json({
       ok: false,
       message: 'Error interno en el servidor'
     })
-  }}
+  }
+}
 
-const eliminarProducto = async(req, res) => {  
+const eliminarProducto = async(req, res) => {
   try{
+    const id = Number(req.params.id)
+    //Agregar validación ID no puede ser negativo
+
+    const [resultado] = await pool.execute('DELETE FROM productos WHERE id = ?', [id])
+
+    if (resultado.affectedRows === 0){
+      return res.status(404).json({
+        ok: false,
+        message: 'El ID no existe'
+      })
+    }
+
+    res.status(200).json({
+      ok: true,
+      message: 'Producto eliminado'
+    })
 
   }catch(e){
     console.error(e)
@@ -172,9 +190,10 @@ const eliminarProducto = async(req, res) => {
       ok: false,
       message: 'Error interno en el servidor'
     })
-  }}
+  }
+}
 
-//Todos los métodos deber ser EXPORTADOS (se utilizarán desde la app)
+//Todos los métodos deben ser EXPORTADOS (se utilizarán desde la app)
 //el que lo utilizará será "routes"
 module.exports = {
   listarProductos,
