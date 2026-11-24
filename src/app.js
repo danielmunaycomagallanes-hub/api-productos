@@ -1,32 +1,25 @@
-//app = aplication
+//app = application
 const path = require('path')
 const express = require('express') //Framework
-const routes = require('./routes') // rutas
+const routes = require('./routes') //Rutas
 
+const app = express() //Inicializamos la App
 
-const app = express() //Inicializamos la app
+app.use(express.json()) //Comunicación es JSON
 
-app.use(express.json()) //comunicación es json 
-
-
-//Mensaje predeterminado 
-//http:miaplicacion.com/
-
-
-
-
+//Mensaje predeterminado
+//http:/miaplicacion.com/
 /*
-app.get('/',(req, res) => {
+app.get('/', (req, res) =>{
   res.status(200).json({
     ok: true,
-    message: 'API REST ejecutándose correctamente'
+    message: 'API REST ejecutandose correctamente'
   })
 })
-*/
+  */
 
-//ahora se sirve toda la carpeta
-app.use(express.static(path.join(__dirname, '..', 'public')))
-//habilitamos las rutas de todos los módulos (index.js)
-
+//Ahora se sirve toda la carpeta "public"
+app.use(express.static(path.join(__dirname, '..', 'public')));
+//Habilitamos las rutas de todos los módulos (index.js)
 app.use('/api', routes)
-module.exports= app
+module.exports = app
