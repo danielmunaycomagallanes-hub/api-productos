@@ -1,16 +1,79 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-</head>
-<body>
-  <!-- Librerías CSS -->
-    <!--
-    - Bootstrap V6 (Simplicidad, rápida, moderna) + requiere JS
-    - Bulma CSS V1.0.4 (Similar a Bootstrap) + No necesita JS
-    - Tailwind V4.3 (Orientada a componentes - React) - Mayor complejidad
-    -->
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@6.0.0-alpha.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-MKn5NWVBEuQXJE7TSKSgPUmMiSCmVTfCsR+VSSeQpHnoyJQZZFn/kBn+Ht5jZDPQ"
+      crossorigin="anonymous"
+    />
+  </head>
+  <body>
+    
+    <div class="container py-4">
+      <h1 class="mb-4">Mantenimiento de productos</h1>
+      <div id="mensaje" class="mb-3"></div><!-- margin-mottom-3 -->
+      <!-- columnas [FORMULARIO - TABLA] -->
+       <!-- 
+      [FORMULARIO]
+      [TABLA] -->
+      <div class="row g-4">
+        <!-- Formulario -->
+         <div class="col-12 md:col-4">
+          <div class="card">
+            <div class="car-header" id="tituloFormulario">Nuevo producto</div>
+            <div class="card-body">
+              <form id="formProducto">
+                <!-- Campo oculto -->
+                 <input type="hidden" id="id">
+
+                <div class="mb-3">
+                  <label for="marca" class="from-label">Marca</label>
+                  <input type="text" id="marca" class="form-control" required>
+                </div>
+
+                <div class="mb-3">
+                  <label for="descripcion" class="from-label">Descripción</label>
+                  <input type="text" id="descripcion" class="form-control" required>
+                </div>
+
+                <div class="mb-3">
+                  <label for="recio" class="from-label">Precio</label>
+                  <input type="text" id="precio" class="form-control" required>
+                </div>
+
+                <div class="mb-3">
+                  <label for="stock" class="from-label">Stock</label>
+                  <input type="text" id="stock" class="form-control" required>
+                </div>
+
+                <div>
+                <button class="btn-solid theme-primary">Guardar</button>
+                <button class="btn-solid theme-secondary">Cancelar</button>
+              </div>
+
+              </form>
+            </div>
+          </div>
+         </div>
+
+         <!-- Tabla HTML -->
+          <div class="col-12 md:col-8"></div>
+      </div>
+
+    </div>
+
+
+
+
+    <script
+      type="module"
+      src="https://cdn.jsdelivr.net/npm/bootstrap@6.0.0-alpha.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-+PW0IDVGGwmpaBQvcXY+W0BcpHpITFB3dSfSoGvDdHtLbrLpSbpGcvtQRM/BJpz+"
+      crossorigin="anonymous"
+    ></script>
+  </body>
 </html>
